@@ -1,0 +1,22 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="TV_Rename_Missing_XML_Parser.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="XML_FILE" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="SHOW_DATA" Type="System.Collections.Specialized.StringCollection" Scope="User">
+      <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
+&lt;ArrayOfString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" /&gt;</Value>
+    </Setting>
+    <Setting Name="MISSING_ID_INDICATOR" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">* </Value>
+    </Setting>
+    <Setting Name="WEBSITE_RARBG" Type="System.String" Scope="User">
+      <Value Profile="(Default)">rarbg.to</Value>
+    </Setting>
+    <Setting Name="WEBSITE_TORRENTZ2" Type="System.String" Scope="User">
+      <Value Profile="(Default)">torrentz2.eu</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
