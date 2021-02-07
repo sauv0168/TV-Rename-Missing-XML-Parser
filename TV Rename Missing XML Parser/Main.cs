@@ -258,22 +258,19 @@ namespace TV_Rename_Missing_XML_Parser
         {
             Show show = this.findShow(tv);
 
-            if (show != null)
+            if (tv.SelectedNode.Parent == null)
             {
-                if (tv.SelectedNode.Parent == null)
-                {
-                    TreeNode tvShowNode = tv.SelectedNode;
-                    tvShowNode.Remove();
-                    this.shows.Remove(show);
-                }
-                else
-                {
-                    TreeNode episodeNode = tv.SelectedNode;
-                    TreeNode tvShowNode = episodeNode.Parent;
-                    show.Episodes.Remove(episodeNode.Text.Substring(0, 6));
-                    episodeNode.Remove();
-                    if (tvShowNode.GetNodeCount(false) == 0) tvShowNode.Remove();
-                }
+                TreeNode tvShowNode = tv.SelectedNode;
+                tvShowNode.Remove();
+                if (show != null) this.shows.Remove(show);
+            }
+            else
+            {
+                TreeNode episodeNode = tv.SelectedNode;
+                TreeNode tvShowNode = episodeNode.Parent;
+                if (show != null) show.Episodes.Remove(episodeNode.Text.Substring(0, 6));
+                episodeNode.Remove();
+                if (tvShowNode.GetNodeCount(false) == 0) tvShowNode.Remove();
             }
         }
 
