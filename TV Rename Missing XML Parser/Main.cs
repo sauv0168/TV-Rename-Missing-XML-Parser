@@ -313,6 +313,10 @@ namespace TV_Rename_Missing_XML_Parser
             {
                 this.removeTreeNode(tv);
             }
+            else if (e.Control && e.KeyCode == Keys.C)
+            {
+                Clipboard.SetText(tv.SelectedNode.Text);
+            }
         }
 
         private void displayShowSettings(TreeView sender)
