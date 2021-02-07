@@ -251,7 +251,11 @@ namespace TV_Rename_Missing_XML_Parser
 
         private void treeResults_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
         {
-            TreeView tv = (TreeView)sender;
+            this.removeTreeNode((TreeView) sender);
+        }
+
+        private void removeTreeNode(TreeView tv)
+        {
             Show show = this.findShow(tv);
 
             if (show != null)
@@ -307,6 +311,10 @@ namespace TV_Rename_Missing_XML_Parser
                             MessageBoxButtons.OK,
                             MessageBoxIcon.Error
                         );
+            }
+            else if(e.KeyCode == Keys.D)
+            {
+                this.removeTreeNode(tv);
             }
         }
 
