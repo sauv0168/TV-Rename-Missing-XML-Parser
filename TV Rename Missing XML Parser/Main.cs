@@ -277,7 +277,7 @@ namespace TV_Rename_Missing_XML_Parser
         private void treeResults_KeyDown(object sender, KeyEventArgs e)
         {
             TreeView tv = (TreeView)sender;
-            if (e.Control) this.displayShowSettings(tv);
+            if (e.Shift) this.displayShowSettings(tv);
             else if (e.Alt)
             {
                 StringCollection IMDB_IDs = this.userSettingsTool.SHOW_DATA;
