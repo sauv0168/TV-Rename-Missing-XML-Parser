@@ -26,22 +26,20 @@ namespace TV_Rename_Missing_XML_Parser
             this.userSettingsTool = UserSettingsTool.Get();
             txtIMDB_ID.Text = show.IMDB_ID;
             rbRARBG.Text = this.userSettingsTool.WEBSITE_RARBG;
-            rbTorrentz2.Text = this.userSettingsTool.WEBSITE_TORRENTZ2;
 
+            //TODO: This seems bad
             if (this.userSettingsTool.WEBSITE_RARBG.ToLower().Contains(show.Website))
             {
                 rbRARBG.Checked = true;
-                rbTorrentz2.Checked = false;
             }
             else{
                 rbRARBG.Checked = false;
-                rbTorrentz2.Checked = true;
             }
         }
 
         private void txtIMDB_ID_TextChanged(object sender, EventArgs e)
         {
-            this.userSettingsTool.AddIMDB_ID_ByShowTitle(this.show.Title, txtIMDB_ID.Text, this.getWebsite());
+            this.userSettingsTool.AddOrUpdateTVShowStoredString(this.show.Title, txtIMDB_ID.Text, this.getWebsite());
         }
 
         private void ShowSettingsForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -58,7 +56,7 @@ namespace TV_Rename_Missing_XML_Parser
 
         private string getWebsite()
         {
-            return rbRARBG.Checked ? rbRARBG.Text : rbTorrentz2.Text;
+            return rbRARBG.Checked ? rbRARBG.Text : null;
         }
 
         private void rbRARBG_CheckedChanged(object sender, EventArgs e)
@@ -74,7 +72,7 @@ namespace TV_Rename_Missing_XML_Parser
         private void updateWebsite(string website)
         {
             //TODO: website not saved or some other issue
-            this.userSettingsTool.AddIMDB_ID_ByShowTitle(
+            this.userSettingsTool.AddOrUpdateTVShowStoredString(
                 this.show.Title, this.show.IMDB_ID, website
                 );
         }

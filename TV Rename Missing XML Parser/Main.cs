@@ -19,13 +19,13 @@ namespace TV_Rename_Missing_XML_Parser
     public partial class Main : Form
     {
         private const string RARBG_URL = "https://rarbg.to/torrents.php?search={0}&page=1";
-        private UserSettingsTool userSettingsTool;
-        private string MISSING_ID_INDICATOR;
+        private readonly UserSettingsTool userSettingsTool;
+        private readonly string MISSING_ID_INDICATOR;
 
         private string fileName;
-        private List<Show> shows;
+        private readonly List<Show> shows;
 
-        private LogForm logForm;
+        private readonly LogForm logForm;
 
         public Main()
         {
@@ -94,7 +94,6 @@ namespace TV_Rename_Missing_XML_Parser
 
             if (this.shows.Count == 0)
             {
-                this.shows.Clear();
                 XElement missingItems = (XElement)XElement.Load(this.fileName).FirstNode;
 
                 //Create show objects by title
@@ -104,24 +103,24 @@ namespace TV_Rename_Missing_XML_Parser
                     {
                         Show show = new Show();
                         show.Title = title.Value;
-                        string storedID = userSettingsTool.GetIMDB_ID_ByShowTitle(show.Title);
-                        show.IMDB_ID = storedID == null ? "" : storedID;
+                        var tvShowStoredString = userSettingsTool.GetTVShowStoredStringByTitle(show.Title);
 
-                        if (show.Website == null)
+                        if(tvShowStoredString != null)
                         {
-                            string website = this.userSettingsTool.WEBSITE_RARBG;
-                            this.
-                                userSettingsTool.
-                                AddIMDB_ID_ByShowTitle(
-                                    show.Title, 
-                                    show.IMDB_ID, 
-                                    website
-                                    );
-
-                            show.Website = website;
+                            show.IMDB_ID = tvShowStoredString.IMDB_ID;
+                            show.Website = tvShowStoredString.DownloadWebsite;
                         }
-                        
-                        
+                        else
+                        {
+                            show.Website = this.userSettingsTool.WEBSITE_RARBG;
+                        }
+
+                        this.userSettingsTool.
+                            AddOrUpdateTVShowStoredString(
+                                show.Title, 
+                                show.IMDB_ID, 
+                                show.Website
+                                );                        
                         
                         this.shows.Add(show);
                         Console.WriteLine("added: " + show.Title);
@@ -163,7 +162,7 @@ namespace TV_Rename_Missing_XML_Parser
 
             foreach (Show show in shows)
             {
-                string shownTitle = show.IMDB_ID == "" ? this.generateMissingIDIndicatorTitle(show) : show.Title;
+                string shownTitle = show.IMDB_ID == null ? this.generateMissingIDIndicatorTitle(show) : show.Title;
                 TreeNode tree = new TreeNode(shownTitle);
 
                 foreach (Episode episode in show.Episodes.Values)
@@ -172,7 +171,7 @@ namespace TV_Rename_Missing_XML_Parser
                     maxAge = int.TryParse(txtMaxAge.Text, out maxAge) ? maxAge : 14;
 
                     if (episode.Age <= maxAge)
-                        tree.Nodes.Add(episode.SeasonAndNumber + " - " + episode.Name + " (" + episode.Age + ")");
+                        tree.Nodes.Add(show.Title + " " + episode.Name, episode.SeasonAndNumber + " - " + episode.Name + " (" + episode.Age + ")");
                 }
 
                 if (tree.Nodes.Count != 0 && (txtSearch.Text != "" ? show.Title.Contains(txtSearch.Text) : true))
@@ -282,21 +281,20 @@ namespace TV_Rename_Missing_XML_Parser
             {
                 StringCollection IMDB_IDs = this.userSettingsTool.SHOW_DATA;
                 Show show = this.findShow(tv);
+                var tvShowStoredString = this.userSettingsTool.GetTVShowStoredStringByTitle(show.Title);
 
-                string showID = this.userSettingsTool.GetIMDB_ID_ByShowTitle(show.Title);
-
-                if (showID != null)
+                if (tvShowStoredString.IMDB_ID != null)
                 {
                     string searchString = "";
                     if (this.isNode(tv))
                     {
                         Regex pattern = new Regex(@"S\d+E\d+");
                         Match match = pattern.Match(tv.SelectedNode.Text);
-                        searchString = showID + " " + match.Value;
+                        searchString = tvShowStoredString.IMDB_ID + " " + match.Value;
                     }
                     else
                     {
-                        searchString = showID;
+                        searchString = tvShowStoredString.IMDB_ID;
                     }
 
                     WebTools.Get().OpenUrl(String.Format(RARBG_URL, searchString).Replace(" ", "%20"));
@@ -315,7 +313,7 @@ namespace TV_Rename_Missing_XML_Parser
             }
             else if (e.Control && e.KeyCode == Keys.C)
             {
-                Clipboard.SetText(tv.SelectedNode.Text);
+                Clipboard.SetText(tv.SelectedNode.Name);
             }
         }
 

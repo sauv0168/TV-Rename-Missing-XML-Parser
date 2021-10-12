@@ -15,8 +15,5 @@
     <Setting Name="WEBSITE_RARBG" Type="System.String" Scope="User">
       <Value Profile="(Default)">rarbg.to</Value>
     </Setting>
-    <Setting Name="WEBSITE_TORRENTZ2" Type="System.String" Scope="User">
-      <Value Profile="(Default)">torrentz2.eu</Value>
-    </Setting>
   </Settings>
 </SettingsFile>

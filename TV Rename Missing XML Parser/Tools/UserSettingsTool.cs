@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TV_Rename_Missing_XML_Parser.Entities;
 
 namespace TV_Rename_Missing_XML_Parser.Tools
 {
@@ -56,19 +57,6 @@ namespace TV_Rename_Missing_XML_Parser.Tools
             }
         }
 
-        public string WEBSITE_TORRENTZ2
-        {
-            get
-            {
-                return Properties.Settings.Default.WEBSITE_TORRENTZ2;
-            }
-            set
-            {
-                Properties.Settings.Default.WEBSITE_TORRENTZ2 = value;
-                this.Save();
-            }
-        }
-
         public StringCollection SHOW_DATA
         {
             get
@@ -77,80 +65,60 @@ namespace TV_Rename_Missing_XML_Parser.Tools
             }
         }
 
-        public string GetIMDB_ID_ByShowTitle(string showTitle)
+        public void AddOrUpdateTVShowStoredString(string showTitle, string IMDB_ID, string website)
         {
-            foreach (string showItem in this.SHOW_DATA)
-            {
-                StringReader sr = new StringReader(showItem);
-                if(sr.ReadLine() == showTitle)
-                {
-                    return sr.Peek() != -1 ? sr.ReadLine() : null;
-                }
-            }
-
-            return null;
-        }
-
-        public string GetWebsiteByShowTitle(string showTitle)
-        {
-            StringCollection IMDB_IDs = this.SHOW_DATA;
-
-            foreach (string showItem in IMDB_IDs)
-            {
-                StringReader sr = new StringReader(showItem);
-                if (sr.ReadLine() == showTitle)
-                {
-                    if(sr.Peek() != -1) sr.ReadLine();
-                    return sr.Peek() != -1 ? sr.ReadLine() : null;
-                }
-            }
-
-            return null;
-        }
-
-        public void AddIMDB_ID_ByShowTitle(string showTitle, string IMDB_ID, string website)
-        {            
-            if(this.GetIMDB_ID_ByShowTitle(showTitle) != null)
-            {
-                this.RemoveIMDB_ID_ByShowTitle(showTitle, null, website);
-            }
-
-            string websiteClean = website.ToLower().Contains("rarbg") ? "rarbg" : "torrentz2";
+            var item = new TVShowStoredString(showTitle, IMDB_ID, website);
+            var storedItem = GetTVShowStoredStringByTitle(showTitle);
             
-            this.SHOW_DATA.Add(this.toIMDB_ID_StoredString(showTitle, IMDB_ID, websiteClean));
+            if (storedItem != null)
+            {
+                if (item.Equals(storedItem)) return;
+
+                this.RemoveTVShowStoredString(storedItem);
+            }
+            
+            this.SHOW_DATA.Add(new TVShowStoredString(showTitle, IMDB_ID, website).GetStoredFormat());
             this.Save();
         }
 
-        public void RemoveIMDB_ID_ByShowTitle(string showTitle, string IMDB_ID, string website)
+        public void RemoveTVShowStoredString(TVShowStoredString item)
         {
-            if(IMDB_ID != null)
+            for(int index = 0; index < this.SHOW_DATA.Count; index++)
             {
-                this.SHOW_DATA.Remove(this.toIMDB_ID_StoredString(showTitle, IMDB_ID, website));
-            }
-            else
-            {
-                int index = 0;
-                for (; index < this.SHOW_DATA.Count; index++)
+                if (this.SHOW_DATA[index].StartsWith(item.ShowTitle))
                 {
-                    if (this.SHOW_DATA[index].StartsWith(showTitle)) break;
+                    this.SHOW_DATA.RemoveAt(index);
+
+                    this.Save();
+                    return;
                 }
-                this.SHOW_DATA.RemoveAt(index);
             }
 
-            this.Save();
+            throw new KeyNotFoundException();
         }
 
-        private string toIMDB_ID_StoredString(string showTitle, string IMDB_ID, string website)
+        public TVShowStoredString GetTVShowStoredStringByTitle(string showTitle)
         {
-            return showTitle + "\r\n" + IMDB_ID + "\r\n" + website;
+            StringCollection showItems = this.SHOW_DATA;
+
+            foreach (string showItem in showItems)
+            {
+                var item = new TVShowStoredString(showItem);
+                if (item.ShowTitle == showTitle) return item;
+            }
+
+            return null;
         }
 
-        private string getIMDB_ID_StoredStringByTitle(string showTitle)
+        public TVShowStoredString GetTVShowStoredStringByIMDB_ID(string IMDB_ID)
         {
-            StringCollection IMDB_IDs = Properties.Settings.Default.SHOW_DATA;
+            StringCollection showItems = this.SHOW_DATA;
 
-            foreach (string showItem in IMDB_IDs)
-                if (showItem.StartsWith(showTitle)) return showItem;
+            foreach (string showItem in showItems)
+            {
+                var item = new TVShowStoredString(showItem);
+                if (item.IMDB_ID == IMDB_ID) return item;
+            }
 
             return null;
         }
