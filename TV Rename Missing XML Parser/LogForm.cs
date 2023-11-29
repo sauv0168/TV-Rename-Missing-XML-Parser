@@ -17,9 +17,12 @@ namespace TV_Rename_Missing_XML_Parser
             InitializeComponent();
         }
 
-        public void add(string logLine)
+        public void add(List<string> logLines)
         {
-            lvLog.Items.Add(logLine);
+            foreach (string logLine in logLines)
+            {
+                lvLog.Items.Add(logLine);
+            }
         }
     }
 }

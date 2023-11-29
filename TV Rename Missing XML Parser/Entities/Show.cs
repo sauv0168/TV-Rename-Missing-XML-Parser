@@ -6,19 +6,59 @@ using System.Threading.Tasks;
 
 namespace TV_Rename_Missing_XML_Parser.Entities
 {
-    public class Show
+    public partial class Show
     {
-        public string Title { get; set; }
-        public string IMDB_ID { get; set; }
-        public string Website { get; set; }
+        public SortedList<string, Episode> Episodes { get; }
 
-        private SortedList<string, Episode> episodes;
-        public SortedList<string, Episode> Episodes { get { return this.episodes; } }
-
-        public Show()
+        public Show(string id, string imdbId, string title, string torrentSiteUrl)
         {
-            this.episodes = new SortedList<string, Episode>();
+            this.Id = id;
+            this.ImdbId = imdbId;
+            this.Title = title;
+            this.TorrentSiteUrl = torrentSiteUrl;
+            this.Episodes = new SortedList<string, Episode>();
         }
 
+        public Show() : this(null, null, null, null)
+        {
+            //only calls other constructor
+        }
+
+        public Show(string id, string imdbId, string title) : this(id, imdbId, title, null)
+        {
+            //only calls other constructor
+        }
+
+        /// <summary>
+        /// Compares the two Show objects by title and IMDB ID
+        /// </summary>
+        /// <param name="obj">The object to compare (should be a Show)</param>
+        /// <returns></returns>
+        public override bool Equals(object obj)
+        {
+            if (obj == null || !(obj is Show)) return false;
+
+            Show comp = obj as Show;
+
+            return comp.Id == this.Id;
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
+        
+
+        public Episode FindEpisodeBySeasonAndNumber(Show show, string seasonAndNumber)
+        {
+            foreach (KeyValuePair<string, Episode> episodeInfo in show.Episodes)
+            {
+                Episode episode = episodeInfo.Value;
+                if (episode.SeasonAndNumber == seasonAndNumber) return episode;
+            }
+
+            return null;
+        }
     }
 }

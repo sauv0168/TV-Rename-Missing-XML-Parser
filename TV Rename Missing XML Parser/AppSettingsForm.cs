@@ -7,32 +7,35 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using TV_Rename_Missing_XML_Parser.Tools;
+using TV_Rename_Missing_XML_Parser.Controllers;
 
 namespace TV_Rename_Missing_XML_Parser
 {
     public partial class AppSettingsForm : Form
     {
-        readonly UserSettingsTool userSettingsTool;
+        private readonly UserSettingsController userSettingsTool;
+        private readonly WebController webController;
 
-        public AppSettingsForm()
+        public AppSettingsForm(UserSettingsController userSettingsController, WebController webController)
         {
             InitializeComponent();
-            this.userSettingsTool = UserSettingsTool.Get();
-            txtWebsiteRARBG.Text = this.userSettingsTool.WEBSITE_RARBG;
+
+            this.userSettingsTool = userSettingsController;
+            this.webController = webController;
+            //txtWebsiteRARBG.Text = this.userSettingsTool.WEBSITE_RARBG;
         }
 
         private void btnRestoreDefaults_Click(object sender, EventArgs e)
         {
-            string RARBG = "rarbg.to";
+            //string RARBG = "rarbg.to";
 
-            this.userSettingsTool.WEBSITE_RARBG = RARBG;
-            txtWebsiteRARBG.Text = RARBG;
+            //this.userSettingsTool.WEBSITE_RARBG = RARBG;
+            //txtWebsiteRARBG.Text = RARBG;
         }
 
         private void linkTorrentFreak_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            WebTools.Get().OpenUrl("https://torrentfreak.com");
+            this.webController.OpenUrl("https://torrentfreak.com");
         }
     }
 }

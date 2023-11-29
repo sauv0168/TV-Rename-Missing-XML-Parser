@@ -11,6 +11,7 @@ namespace TV_Rename_Missing_XML_Parser.Entities
         public string Season { get; set; }
         public string Number { get; set; }
         public string Name { get; set; }
+
         private string pubDate;
         public string PubDate
         {
@@ -30,6 +31,8 @@ namespace TV_Rename_Missing_XML_Parser.Entities
         public int Age { get { return this.age; } }
         public string SeasonAndNumber { get { return "S" + this.Season + "E" + this.Number; } }
         public string SeasonAndNumberWithName { get { return this.SeasonAndNumber + " - " + this.Name; } }
+        public string FullName { get { return this.SeasonAndNumber + " - " + this.Name; } }
+        public Show Show { get; set; }
 
         public Episode()
         {

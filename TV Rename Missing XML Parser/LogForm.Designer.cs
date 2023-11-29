@@ -34,19 +34,22 @@
             // lvLog
             // 
             this.lvLog.HideSelection = false;
-            this.lvLog.Location = new System.Drawing.Point(13, 13);
+            this.lvLog.Location = new System.Drawing.Point(10, 11);
+            this.lvLog.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.lvLog.Name = "lvLog";
-            this.lvLog.Size = new System.Drawing.Size(775, 425);
+            this.lvLog.Size = new System.Drawing.Size(582, 346);
             this.lvLog.TabIndex = 0;
             this.lvLog.UseCompatibleStateImageBehavior = false;
             // 
             // LogForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(600, 366);
             this.Controls.Add(this.lvLog);
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Name = "LogForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "LogForm";
             this.ResumeLayout(false);
 

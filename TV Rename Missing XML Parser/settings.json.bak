@@ -1,0 +1,19 @@
+﻿{
+  "XmlFilePath": "",
+  "TorrentSites": [
+    {
+      "Url": "https://1337x.to",
+      "PathStart": "/search/",
+      "SearchDelimiter": "+",
+      "PathEnd": ""
+    }
+  ],
+  "Shows": [
+    {
+      "Id": "",
+      "ImdbId": "",
+      "Title": "",
+      "TorrentSiteUrl": ""
+    }
+  ]
+}
