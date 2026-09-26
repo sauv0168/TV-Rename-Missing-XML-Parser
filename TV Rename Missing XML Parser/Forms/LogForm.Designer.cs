@@ -1,4 +1,4 @@
-﻿namespace TV_Rename_Missing_XML_Parser
+﻿namespace TV_Rename_Missing_XML_Parser.Forms
 {
     partial class LogForm
     {

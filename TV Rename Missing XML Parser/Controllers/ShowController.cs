@@ -25,8 +25,21 @@ namespace TV_Rename_Missing_XML_Parser.Controllers
             this.tVRenameXMLController = tVRenameXMLController;
 
             this.Errors = new List<string>();
+            this.Shows = new List<Show>();
 
-            this.Reset();
+            this.LoadShowsFromSettings();
+        }
+
+        private void LoadShowsFromSettings()
+        {
+            Dictionary<string, ShowSettings> settingsLookup = this.userSettingsController.ShowSettingsLookup;
+
+            foreach (ShowSettings settings in settingsLookup.Values)
+            {
+                Show show = new Show(settings.Id, null, settings.Title);
+                show.Settings = settings;
+                this.Shows.Add(show);
+            }
         }
 
         public Episode AddEpisode(string showId, string showImdbCode, string showTitle, string seasonNumber, string episodeNumber, string episodeName, string publicationDate)
@@ -37,7 +50,7 @@ namespace TV_Rename_Missing_XML_Parser.Controllers
 
             episode.Season = seasonNumber;
             episode.Number = episodeNumber;
-            episode.Name = episodeName;
+            episode.Title = episodeName;
             episode.PubDate = publicationDate;
 
             if (show.Episodes.ContainsKey(episode.SeasonAndNumber))
@@ -63,29 +76,31 @@ namespace TV_Rename_Missing_XML_Parser.Controllers
 
             if (show != null)
             {
-                this.updateAttributesIfNotNull(showId, showImdbCode, showTitle, null);
+                this.updateAttributesIfNotNull(showId, showTitle);
+                if (showImdbCode != null) show.ImdbId = showImdbCode;
                 return show;
             }
 
-            this.Shows.Add(new Show(showId, showImdbCode, showTitle));
-            return this.Shows.Last();
+            Show newShow = new Show(showId, showImdbCode, showTitle);
+            this.Shows.Add(newShow);
+            return newShow;
         }
 
-        public TorrentSite GetTorrentSite(Show show)
+        public TorrentSiteSettings GetTorrentSite(Show show)
         {
-            TorrentSite torrentSite = this.userSettingsController.TorrentSites.
-                FirstOrDefault(ts => ts.Url == show.TorrentSiteUrl);
+            if (show.Settings != null && show.Settings.TorrentSiteName != null)
+            {
+                return this.userSettingsController.GetSiteByName(show.Settings.TorrentSiteName);
+            }
 
-            return torrentSite != null ? 
-                torrentSite :
-                this.userSettingsController.TorrentSites.First();
+            return this.userSettingsController.GetDefaultSite();
         }
 
-        public void Reset()
+        public void ClearAndReloadShows()
         {
-            this.userSettingsController.Reset();
-            this.Shows = this.userSettingsController.Shows;
+            this.Shows.Clear();
             this.tVRenameXMLController.ParseXMLFile(this.userSettingsController.XmlFilePath, this);
+            this.SortShowsByTitle();
             this.Errors.Clear();
         }
 
@@ -128,17 +143,120 @@ namespace TV_Rename_Missing_XML_Parser.Controllers
         //    return null;
         //}
 
-        public void updateAttributesIfNotNull(string id, string imdbCode, string title, string torrentSiteUrl)
+        public void updateAttributesIfNotNull(string id, string title)
         {
             Show show = this.Shows.Find(s => s.Id == id);
 
             if (id != null) show.Id = id;
 
-            if (imdbCode != null) show.ImdbId = imdbCode;
-
             if (title != null) show.Title = title;
-
-            if (torrentSiteUrl != null) show.TorrentSiteUrl = torrentSiteUrl;
         }
+
+        public void SortShowsByTitle()
+        {
+            this.Shows.Sort((a, b) => a.Title.CompareTo(b.Title));
+        }
+
+        /// <summary>
+        /// Get clean title for display; fallback to show title if not set.
+        /// </summary>
+        public string GetDisplayCleanTitle(Show show)
+        {
+            if (show == null)
+                throw new ArgumentNullException(nameof(show));
+
+            string cleanTitle = show.Settings?.CleanTitle;
+            return string.IsNullOrEmpty(cleanTitle) ? show.Title : cleanTitle;
+        }
+
+        /// <summary>
+        /// Set clean title and persist to settings.
+        /// </summary>
+        public void SetCleanTitle(Show show, string cleanTitle)
+        {
+            if (show == null)
+                throw new ArgumentNullException(nameof(show));
+
+            if (show.Settings != null)
+            {
+                show.Settings.CleanTitle = cleanTitle;
+            }
+        }
+
+        /// <summary>
+        /// Get torrent site name for show; null if using default.
+        /// </summary>
+        public string GetTorrentSiteName(Show show)
+        {
+            if (show == null)
+                throw new ArgumentNullException(nameof(show));
+
+            return show.Settings?.TorrentSiteName;
+        }
+
+        /// <summary>
+        /// Set torrent site name and persist to settings.
+        /// </summary>
+        public void SetTorrentSiteName(Show show, string siteName)
+        {
+            if (show == null)
+                throw new ArgumentNullException(nameof(show));
+
+            if (show.Settings != null)
+            {
+                show.Settings.TorrentSiteName = siteName;
+            }
+        }
+
+        /// <summary>
+        /// Toggle the ignore flag for an episode.
+        /// </summary>
+        public void ToggleIgnoreEpisode(Episode episode)
+        {
+            if (episode == null)
+                throw new ArgumentNullException(nameof(episode));
+
+            Show show = episode.Show;
+            if (show == null)
+                return;
+
+            if (show.Settings == null)
+            {
+                show.Settings = new ShowSettings { Id = show.Id, Title = show.Title };
+                this.userSettingsController.Add(show.Settings);
+            }
+
+            EpisodeSettings episodeSetting = show.Settings.Episodes?.FirstOrDefault(e => e.SeasonAndNumber == episode.SeasonAndNumber);
+
+            if (episodeSetting != null)
+            {
+                episodeSetting.Ignore = !episodeSetting.Ignore;
+
+                if (!episodeSetting.Ignore)
+                {
+                    show.Settings.Episodes.Remove(episodeSetting);
+
+                    if (show.Settings.Episodes.Count == 0 &&
+                        string.IsNullOrEmpty(show.Settings.CleanTitle) &&
+                        string.IsNullOrEmpty(show.Settings.TorrentSiteName))
+                    {
+                        this.userSettingsController.Remove(show.Settings);
+                    }
+                }
+            }
+            else
+            {
+                if (show.Settings.Episodes == null)
+                {
+                    show.Settings.Episodes = new List<EpisodeSettings>();
+                }
+                show.Settings.Episodes.Add(new EpisodeSettings
+                {
+                    SeasonAndNumber = episode.SeasonAndNumber,
+                    Ignore = true
+                });
+            }
+        }
+
     }
 }

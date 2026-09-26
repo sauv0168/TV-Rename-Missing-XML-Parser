@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using TV_Rename_Missing_XML_Parser.Controllers;
+using TV_Rename_Missing_XML_Parser.Forms;
 
 namespace TV_Rename_Missing_XML_Parser
 {
@@ -17,7 +18,7 @@ namespace TV_Rename_Missing_XML_Parser
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Main());
+            Application.Run(new MainForm());
         }
     }
 }

@@ -16,13 +16,36 @@ namespace TV_Rename_Missing_XML_Parser.Controllers
     {
         private readonly List<Show> shows;
         private readonly TreeView treeResults;
+        private readonly ShowController showController;
+        private readonly SearchController searchController;
 
-        public TreeViewController(TreeView treeResults, List<Show> shows)
+        public TreeViewController(TreeView treeResults, List<Show> shows, ShowController showController, SearchController searchController)
         {
             this.treeResults = treeResults;
             this.shows = shows;
+            this.showController = showController;
+            this.searchController = searchController;
         }
 
+        /// <summary>
+        /// Disable the tree view.
+        /// </summary>
+        public void Disable()
+        {
+            this.treeResults.Enabled = false;
+        }
+
+        /// <summary>
+        /// Enable the tree view.
+        /// </summary>
+        public void Enable()
+        {
+            this.treeResults.Enabled = true;
+        }
+
+        /// <summary>
+        /// Generate a completely new tree (after fresh data load).
+        /// </summary>
         public void GenerateNewTree(string searchText, int maxDays)
         {
             this.treeResults.BeginUpdate();
@@ -39,6 +62,31 @@ namespace TV_Rename_Missing_XML_Parser.Controllers
             if(this.treeResults.Nodes.Count == 0)
             {
                 this.treeResults.Nodes.Add("No results match search or max age...");
+            }
+        }
+
+        /// <summary>
+        /// Refresh tree while preserving expanded show nodes.
+        /// </summary>
+        public void RefreshTree(string searchText, int maxDays)
+        {
+            List<string> expandedShowIds = new List<string>();
+            foreach (TreeNode node in this.treeResults.Nodes)
+            {
+                if (node.Tag is Show && node.IsExpanded)
+                {
+                    expandedShowIds.Add(((Show)node.Tag).Id);
+                }
+            }
+
+            this.GenerateNewTree(searchText, maxDays);
+
+            foreach (TreeNode node in this.treeResults.Nodes)
+            {
+                if (node.Tag is Show && expandedShowIds.Contains(((Show)node.Tag).Id))
+                {
+                    node.Expand();
+                }
             }
         }
 
@@ -82,13 +130,32 @@ namespace TV_Rename_Missing_XML_Parser.Controllers
             this.treeResults.Nodes.Clear();
             treeResults.Nodes.Add(message);
         }
-        private static void AddEpisodeNodes(int maxDays, Show show, TreeNode showNode)
+        private void AddEpisodeNodes(int maxDays, Show show, TreeNode showNode)
         {
-            foreach (Episode episode in show.Episodes.Values)
+            if (show == null)
+                throw new ArgumentNullException(nameof(show));
+            if (showNode == null)
+                throw new ArgumentNullException(nameof(showNode));
+            if (maxDays < 0)
+                throw new ArgumentException("maxDays must be non-negative", nameof(maxDays));
+
+            bool hasRecentEpisode = maxDays == 0 || show.Episodes.Values.Any(e => e.Age <= maxDays && this.searchController.ShouldShowEpisode(e));
+
+            if (hasRecentEpisode)
             {
-                if (maxDays <= 0 || episode.Age <= maxDays)
+                foreach (Episode episode in show.Episodes.Values)
                 {
+                    if (!this.searchController.ShouldShowEpisode(episode))
+                        continue;
+
                     string nodeText = getEpisodeText(episode);
+
+                    bool isIgnored = episode.Show.Settings?.Episodes?.FirstOrDefault(e => e.SeasonAndNumber == episode.SeasonAndNumber)?.Ignore == true;
+                    if (isIgnored)
+                    {
+                        nodeText = "* " + nodeText;
+                    }
+
                     TreeNode treeNode = new TreeNode(nodeText);
                     treeNode.Tag = episode;
                     showNode.Nodes.Add(treeNode);
@@ -110,7 +177,8 @@ namespace TV_Rename_Missing_XML_Parser.Controllers
         {
             foreach (Show show in this.shows)
             {
-                if ((searchText == "" || show.Title.Contains(searchText)))
+                string searchField = this.searchController.GetFilterText(show);
+                if ((searchText == "" || searchField.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0))
                 {
                     TreeNode showNode = new TreeNode(show.Title);
                     showNode.Tag = show;
@@ -127,7 +195,6 @@ namespace TV_Rename_Missing_XML_Parser.Controllers
         {
             TreeNode tvShowNode = episodeNode.Parent;
 
-            show.Episodes.Remove(((Episode)episodeNode.Tag).SeasonAndNumber);
             episodeNode.Remove();
 
             if (tvShowNode.FirstNode == null)

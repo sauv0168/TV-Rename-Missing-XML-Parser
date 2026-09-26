@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace TV_Rename_Missing_XML_Parser
+namespace TV_Rename_Missing_XML_Parser.Forms
 {
     public partial class LogForm : Form
     {

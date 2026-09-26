@@ -1,0 +1,25 @@
+{
+  "xmlFilePath": "",
+  "torrentSites": [
+    {
+      "name": "piratebay",
+      "url": "https://thepiratebay.org",
+      "pathStart": "/search.php?q=",
+      "searchDelimiter": "+",
+      "pathEnd": "&cat=0",
+      "default": true
+    },
+    {
+      "name": "1337x",
+      "url": "https://1337x.to",
+      "pathStart": "/search/",
+      "searchDelimiter": "+",
+      "pathEnd": "/1/"
+    }
+  ],
+  "shows": [],
+  "searchDelay": 300,
+  "browserPath": "",
+  "lastActivityTime": "",
+  "defaultMaxSearchAge": 14
+}
