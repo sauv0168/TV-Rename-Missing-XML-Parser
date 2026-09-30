@@ -21,5 +21,7 @@
   "searchDelay": 300,
   "browserPath": "",
   "lastActivityTime": "",
-  "defaultMaxSearchAge": 14
+  "defaultMaxSearchAge": 14,
+  "defaultShowIgnore": false,
+  "defaultShowSpecials": true
 }

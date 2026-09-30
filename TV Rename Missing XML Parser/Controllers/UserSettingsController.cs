@@ -97,6 +97,30 @@ namespace TV_Rename_Missing_XML_Parser.Controllers
             }
         }
 
+        public bool DefaultShowIgnore
+        {
+            get
+            {
+                return jsonSettings.DefaultShowIgnore;
+            }
+            set
+            {
+                jsonSettings.DefaultShowIgnore = value;
+            }
+        }
+
+        public bool DefaultShowSpecials
+        {
+            get
+            {
+                return jsonSettings.DefaultShowSpecials;
+            }
+            set
+            {
+                jsonSettings.DefaultShowSpecials = value;
+            }
+        }
+
         public string DefaultSite
         {
             get
@@ -370,6 +394,8 @@ namespace TV_Rename_Missing_XML_Parser.Controllers
                 LastActivityTime = this.jsonSettings.LastActivityTime,
                 DefaultMaxSearchAge = this.jsonSettings.DefaultMaxSearchAge,
                 DefaultSite = this.jsonSettings.DefaultSite,
+                DefaultShowIgnore = this.jsonSettings.DefaultShowIgnore,
+                DefaultShowSpecials = this.jsonSettings.DefaultShowSpecials,
                 OmitNullsInJson = this.jsonSettings.OmitNullsInJson
             };
 

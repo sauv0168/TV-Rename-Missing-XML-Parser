@@ -45,6 +45,16 @@ namespace TV_Rename_Missing_XML_Parser.Entities
         public bool OmitNullsInJson { get; set; }
 
         /// <summary>
+        /// Default ignore setting for new shows.
+        /// </summary>
+        public bool DefaultShowIgnore { get; set; }
+
+        /// <summary>
+        /// Default specials setting for new shows.
+        /// </summary>
+        public bool DefaultShowSpecials { get; set; }
+
+        /// <summary>
         /// List of torrent sites.
         /// </summary>
         public List<TorrentSiteSettings> TorrentSites { get; set; }
