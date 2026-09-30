@@ -84,6 +84,7 @@ Provide a simple, efficient tool for TV show enthusiasts to identify and track m
 - Persist settings to JSON file with smart backup on schema changes
 - Support custom browser configuration with fallback to system default
 - Track activity and auto-set search defaults
+- ✓ Configurable default settings for show ignore and specials visibility
 
 #### Technical
 - .NET Framework 4.8.1 with WinForms

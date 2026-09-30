@@ -59,6 +59,8 @@ Settings are stored in `settings.json`. The file only shows fields with values w
 - `searchDelay`: Debounce delay in milliseconds for search filtering (default: 300ms)
 - `browserPath`: Optional custom browser executable path (leave empty to use system default)
 - `defaultMaxSearchAge`: Default episode age filter in days (default: 14)
+- `defaultShowIgnore`: Default ignore setting for new shows (default: false)
+- `defaultShowSpecials`: Default specials visibility for new shows (default: true)
 - `omitNullsInJson`: When true, only non-null fields appear in the JSON file (default: false)
 
 ### Activity Tracking
