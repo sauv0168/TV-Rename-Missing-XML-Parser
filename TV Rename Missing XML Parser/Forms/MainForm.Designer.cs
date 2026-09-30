@@ -48,7 +48,7 @@
             // 
             // btnXMLFilePicker
             // 
-            this.btnXMLFilePicker.Location = new System.Drawing.Point(12, 12);
+            this.btnXMLFilePicker.Location = new System.Drawing.Point(12, 29);
             this.btnXMLFilePicker.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnXMLFilePicker.Name = "btnXMLFilePicker";
             this.btnXMLFilePicker.Size = new System.Drawing.Size(88, 23);
@@ -60,7 +60,7 @@
             // lblFile
             // 
             this.lblFile.AutoSize = true;
-            this.lblFile.Location = new System.Drawing.Point(12, 43);
+            this.lblFile.Location = new System.Drawing.Point(12, 9);
             this.lblFile.Name = "lblFile";
             this.lblFile.Size = new System.Drawing.Size(100, 16);
             this.lblFile.TabIndex = 1;
@@ -79,7 +79,7 @@
             // lblMaxAge
             // 
             this.lblMaxAge.AutoSize = true;
-            this.lblMaxAge.Location = new System.Drawing.Point(599, 15);
+            this.lblMaxAge.Location = new System.Drawing.Point(599, 32);
             this.lblMaxAge.Name = "lblMaxAge";
             this.lblMaxAge.Size = new System.Drawing.Size(108, 16);
             this.lblMaxAge.TabIndex = 4;
@@ -87,7 +87,7 @@
             // 
             // btnReloadXMLFile
             // 
-            this.btnReloadXMLFile.Location = new System.Drawing.Point(105, 12);
+            this.btnReloadXMLFile.Location = new System.Drawing.Point(105, 29);
             this.btnReloadXMLFile.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnReloadXMLFile.Name = "btnReloadXMLFile";
             this.btnReloadXMLFile.Size = new System.Drawing.Size(73, 23);
@@ -98,7 +98,7 @@
             // 
             // txtSearch
             // 
-            this.txtSearch.Location = new System.Drawing.Point(248, 12);
+            this.txtSearch.Location = new System.Drawing.Point(380, 26);
             this.txtSearch.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.txtSearch.Name = "txtSearch";
             this.txtSearch.Size = new System.Drawing.Size(196, 22);
@@ -108,7 +108,7 @@
             // lblSearch
             // 
             this.lblSearch.AutoSize = true;
-            this.lblSearch.Location = new System.Drawing.Point(188, 15);
+            this.lblSearch.Location = new System.Drawing.Point(320, 29);
             this.lblSearch.Name = "lblSearch";
             this.lblSearch.Size = new System.Drawing.Size(50, 16);
             this.lblSearch.TabIndex = 7;
@@ -116,7 +116,7 @@
             // 
             // btnLog
             // 
-            this.btnLog.Location = new System.Drawing.Point(712, 87);
+            this.btnLog.Location = new System.Drawing.Point(51, 58);
             this.btnLog.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnLog.Name = "btnLog";
             this.btnLog.Size = new System.Drawing.Size(75, 26);
@@ -127,7 +127,7 @@
             // 
             // numMaxAge
             // 
-            this.numMaxAge.Location = new System.Drawing.Point(722, 11);
+            this.numMaxAge.Location = new System.Drawing.Point(722, 28);
             this.numMaxAge.Margin = new System.Windows.Forms.Padding(4);
             this.numMaxAge.Maximum = new decimal(new int[] {
             99999,
@@ -148,7 +148,7 @@
             // 
             // btnHelp
             // 
-            this.btnHelp.Location = new System.Drawing.Point(674, 87);
+            this.btnHelp.Location = new System.Drawing.Point(13, 58);
             this.btnHelp.Name = "btnHelp";
             this.btnHelp.Size = new System.Drawing.Size(32, 26);
             this.btnHelp.TabIndex = 11;
@@ -158,7 +158,7 @@
             // 
             // btnSwitchSpecials
             // 
-            this.btnSwitchSpecials.Location = new System.Drawing.Point(418, 43);
+            this.btnSwitchSpecials.Location = new System.Drawing.Point(546, 58);
             this.btnSwitchSpecials.Name = "btnSwitchSpecials";
             this.btnSwitchSpecials.Size = new System.Drawing.Size(124, 23);
             this.btnSwitchSpecials.TabIndex = 12;
@@ -168,7 +168,7 @@
             // 
             // btnSwitchIgnored
             // 
-            this.btnSwitchIgnored.Location = new System.Drawing.Point(548, 42);
+            this.btnSwitchIgnored.Location = new System.Drawing.Point(676, 57);
             this.btnSwitchIgnored.Name = "btnSwitchIgnored";
             this.btnSwitchIgnored.Size = new System.Drawing.Size(111, 24);
             this.btnSwitchIgnored.TabIndex = 13;

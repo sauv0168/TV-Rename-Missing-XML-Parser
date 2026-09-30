@@ -244,34 +244,55 @@ namespace TV_Rename_Missing_XML_Parser.Controllers
             string timestamp = DateTime.Now.ToString("yyyy-MM-dd_HHmmss");
             string backupPath = Path.Combine(
                 Path.GetDirectoryName(JSON_PATH),
-                $"{Path.GetFileNameWithoutExtension(JSON_PATH)}.{timestamp}.json"
+                $"settings.backup.{timestamp}.json"
             );
             File.Copy(JSON_PATH, backupPath);
         }
 
         /// <summary>
-        /// Fill any null/empty fields in user settings from defaults, then validate specific lists.
+        /// Merge user settings with defaults: starts with all defaults, then overlays user values.
+        /// This automatically adds new fields with defaults when app updates, and removes old fields
+        /// that are no longer in defaults. Preserves all existing user settings.
         /// </summary>
         private bool MergeWithDefaults()
         {
             GeneralSettings defaults = this.GetDefaultSettingsFromFile();
+            GeneralSettings merged = new GeneralSettings();
             bool changed = false;
 
+            // Start with defaults for all properties
+            foreach (var property in typeof(GeneralSettings).GetProperties())
+            {
+                object defaultValue = property.GetValue(defaults);
+                property.SetValue(merged, defaultValue);
+            }
+
+            // Overlay user values: for each property, if user has explicitly set it, preserve their value
+            // For booleans, only overlay if the field was present in the user's JSON
             foreach (var property in typeof(GeneralSettings).GetProperties())
             {
                 object userValue = property.GetValue(this.jsonSettings);
-                bool isNullOrEmpty = userValue == null || (property.PropertyType == typeof(string) && string.IsNullOrEmpty((string)userValue));
+                bool userHasValue = userValue != null &&
+                                   (property.PropertyType != typeof(string) ||
+                                    !string.IsNullOrEmpty((string)userValue));
 
-                if (isNullOrEmpty)
+                // For booleans, also check if the field was actually in the JSON file
+                if (property.PropertyType == typeof(bool) && userHasValue)
                 {
-                    object defaultValue = property.GetValue(defaults);
-                    if (defaultValue != null)
+                    if (this.IsFieldMissingFromUserJson(property.Name))
                     {
-                        property.SetValue(this.jsonSettings, defaultValue);
-                        changed = true;
+                        userHasValue = false; // Field wasn't in JSON, use default
                     }
                 }
+
+                if (userHasValue)
+                {
+                    property.SetValue(merged, userValue);
+                }
             }
+
+            changed = this.DetectSettingsChanged(this.jsonSettings, merged);
+            this.jsonSettings = merged;
 
             UserSettingsValidator validator = new UserSettingsValidator(this.jsonSettings, defaults, this.logController);
 
@@ -305,6 +326,68 @@ namespace TV_Rename_Missing_XML_Parser.Controllers
             }
 
             return changed;
+        }
+
+        /// <summary>
+        /// Detect if settings changed by checking for null/empty values in original user settings.
+        /// If found, parse the actual JSON to see if the field was missing (new field added).
+        /// </summary>
+        private bool DetectSettingsChanged(GeneralSettings original, GeneralSettings merged)
+        {
+            // Check if any null/empty values exist in original
+            foreach (var property in typeof(GeneralSettings).GetProperties())
+            {
+                object userValue = property.GetValue(original);
+                bool isNullOrEmpty = userValue == null ||
+                                    (property.PropertyType == typeof(string) && string.IsNullOrEmpty((string)userValue));
+
+                if (isNullOrEmpty)
+                {
+                    // Found a null/empty value; check if it was missing from user's JSON
+                    if (this.IsFieldMissingFromUserJson(property.Name))
+                    {
+                        return true; // Field was added
+                    }
+                }
+            }
+
+            // Check if any boolean fields were missing from user's JSON
+            foreach (var property in typeof(GeneralSettings).GetProperties())
+            {
+                if (property.PropertyType == typeof(bool))
+                {
+                    if (this.IsFieldMissingFromUserJson(property.Name))
+                    {
+                        return true; // Boolean field was added
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Check if a property exists in the user's JSON file.
+        /// Returns true if the property is missing from the JSON (new field added).
+        /// </summary>
+        private bool IsFieldMissingFromUserJson(string propertyName)
+        {
+            if (!File.Exists(JSON_PATH))
+                return false;
+
+            try
+            {
+                string jsonText = File.ReadAllText(JSON_PATH);
+                using (JsonDocument doc = JsonDocument.Parse(jsonText))
+                {
+                    JsonElement root = doc.RootElement;
+                    return !root.TryGetProperty(propertyName, out _);
+                }
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         public GeneralSettings GetDefaultSettingsFromFile()
@@ -404,6 +487,12 @@ namespace TV_Rename_Missing_XML_Parser.Controllers
                 Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
                 WriteIndented = true
             };
+
+            if (this.jsonSettings.OmitNullsInJson)
+            {
+                options.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
+            }
+
             string jsonText = JsonSerializer.Serialize(settingsToSave, options);
 
             string configDir = Path.GetDirectoryName(JSON_PATH);
