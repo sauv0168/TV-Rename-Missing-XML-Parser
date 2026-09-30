@@ -1,1 +1,2 @@
-- None yet
+- Check if settings.json is being saved unnecessarily on startup (DetectSettingsChanged returning true when nothing actually changed)
+- Test OmitNullsInJson with maximum nulls in settings to verify serialization works correctly
