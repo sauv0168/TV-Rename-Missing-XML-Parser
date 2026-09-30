@@ -11,5 +11,8 @@
 
 ## Next Priorities
 
+- Auto-update cleanTitle on load: check if title changed; if so, generate new cleanTitle by stripping special chars (e.g., "(2024)" from "Show Name (2024)"). If new cleanTitle differs from current, prompt user to choose between old and new cleanTitle.
+- Add shortcut key combo for copy with/without episode name (maybe Ctrl+Shift+C vs Ctrl+C, or separate keys)
+- Refactor keyboard shortcuts: create KeyboardController to centralize key bindings (separate TODO, not urgent)
 - See CHARTER.md for feature completion status
 - All completed features marked with ✓ in CHARTER.md
